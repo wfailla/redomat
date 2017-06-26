@@ -37,7 +37,7 @@ class Redomat:
         self.entry_image = None
         self.dry_run = False
         self.commit_failures = True
-        self._success_tag = None
+        self._success_tag_list = []
         self._entry_stage = None
         self.loglevel = logging.INFO
         self.logformat = '%(asctime)s %(levelname)s: %(message)s'
@@ -124,9 +124,10 @@ class Redomat:
         """
         self.commit_failures = cf
 
-    def set_success_tag(self, repo):
+    def append_success_tag(self, tag):
         """
-            set_success_tag("repo:tag") - tag the final image of a successful build with "repo:tag"
+            append_success_tag("repo:tag") - tag the final image of a
+            successful build with the list of tags declared in this function
         """
         if ":" not in repo:
             self.log(3, "success-tag (%s) does not include a ':'"%(repo))
@@ -141,7 +142,7 @@ class Redomat:
         if "/" not in repo:
             self.log(4, "missing '/' in success-tag might have effects on pushing to registries")
 
-        self._success_tag = repo_tuple
+        self._success_tag_list.append(repo_tuple)
 
     def setuser(self, _user):
         """
@@ -409,9 +410,10 @@ class Redomat:
 
                 if not self.build_stage(stage, pre_image):
                     return False
-            if self._success_tag:
-                self.log(5, "end of build actions. tagging (%s): %s:%s"%(self.container_id[:8], self._success_tag[0], self._success_tag[1]))
-                self.dc().tag(image="%s:%s"%(self.build_id,self.current_stage), repository=self._success_tag[0], tag=self._success_tag[1])
+            if self._success_tag_list:
+                for repo in self._success_tag_list:
+                    self.log(5, "end of build actions. tagging (%s): %s:%s"%(self.container_id[:8], self.repo[0], self.repo[1]))
+                    self.dc().tag(image="%s:%s"%(self.build_id,self.current_stage), repository=self.repo[0], tag=self.repo[1])
         finally:
             self.dc().better_execute(self.container_id, 'touch /REDO/container-terminated')
         return True

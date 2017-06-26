@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -65,6 +65,7 @@ OPTIONS
 
     --success-tag=TAG
         Tag a successful build with TAG using <repo>:<tag> notation.
+        It is possible to set multiple tags by multiple use of this option.
 
 """
 
@@ -98,7 +99,8 @@ def main(argv):
         elif opt in ['-F', '--skip-failure-commit']:
             redo.set_commitfailures(False)
         elif opt in ['--success-tag']:
-            redo.set_success_tag(arg)
+            # change to multiple --success-tag calls
+            redo.append_success_tag(arg.split)
         elif opt in ['-n', '--dry-run']:
             redo.set_dryrun(True)
         elif opt in ['-B', '--new-build-id']:
