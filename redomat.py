@@ -76,7 +76,7 @@ def main(argv):
                 ["help", "checkout", "dry-run", "images", "skip-failure-commit",
                     "list=", "list-bids", "entry=", "target=", "match-build-id",
                     "new-build-id=", "upgrade=", "append-local-conf=", "success-tag="])
-    except getopt.GetoptError, e:
+    except getopt.GetoptError as e:
         print(e)
         print(usage())
         sys.exit(1)
